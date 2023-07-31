@@ -73,5 +73,8 @@ npx sequelize-cli model:generate --name User --attributes firstName:string,lastN
 migrate// tao database, sau khi tạo dc model user
 seed// tạo dữ liệu để test
 
+//tao lai 1 migration cu the
+npx sequelize-cli db:migrate --to migration-create-user.js
+
 
 
