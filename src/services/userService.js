@@ -113,6 +113,7 @@ let createNewUser = (data) => {
             }
             else {
                 let hashPasswordFromBcrypt = await hashUserPassword(data.password);
+
                 let temp = {
                     email: data.email,
                     password: hashPasswordFromBcrypt,//data.phonenumber
@@ -122,7 +123,8 @@ let createNewUser = (data) => {
                     phonenumber: data.phoneNumber,
                     gender: data.gender,
                     roleId: data.roleId,
-                    positionId: data.positionId
+                    positionId: data.positionId,
+                    image: data.avatar
                 };
                 //resolve(temp)
                 await db.User.create(temp);
@@ -187,6 +189,13 @@ let updateUserData = (data) => {
                 user.firstName = data.firstName;
                 user.lastName = data.lastName;
                 user.address = data.address;
+                user.roleId = data.roleId ? data.roleId : '';
+                user.positionId = data.positionId ? data.positionId : '';
+                user.gender = data.gender ? data.gender : '';
+                user.phonenumber = data.phoneNumber ? data.phoneNumber : '';
+                if (data.avatar) {
+                    user.image = data.avatar;
+                }
                 await user.save();
                 // await db.User.save({
                 //     firstName: data.firstName,
@@ -195,7 +204,7 @@ let updateUserData = (data) => {
                 // });
                 resolve({
                     errCode: 0,
-                    errMessage: 'The user is deleted'
+                    errMessage: 'The user is edit'
                 });
             }
             else {
