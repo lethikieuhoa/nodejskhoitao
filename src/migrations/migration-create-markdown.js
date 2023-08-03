@@ -8,7 +8,16 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
+            contentHTML: {
+                allowNull: false,
+                type: Sequelize.TEXT('long')
+            },
+            contentMarkdown: {
+                allowNull: false,
+                type: Sequelize.TEXT('long')
+            },
             doctorId: {
+
                 type: Sequelize.INTEGER
             },
             clinicId: {
@@ -16,6 +25,10 @@ module.exports = {
             },
             specialtyid: {
                 type: Sequelize.INTEGER
+            },
+            description: {
+
+                type: Sequelize.TEXT('long')
             },
             createdAt: {
                 allowNull: false,
