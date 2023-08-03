@@ -10,7 +10,7 @@ let getTopDoctorHome = async (req, res) => {
         console.log(e);
         return res.status(200).json({
             errorCode: -1,
-            message: ' Error from server...'
+            errMessage: ' Error from server...'
         });
     }
 
@@ -23,7 +23,7 @@ let getALLDoctor = async (req, res) => {
         console.log(e);
         return res.status(200).json({
             errorCode: -1,
-            message: ' Error from server...'
+            errMessage: ' Error from server...'
         });
     }
 }
@@ -35,12 +35,32 @@ let postInforDoctor = async (req, res) => {
         console.log(e);
         return res.status(200).json({
             errorCode: -1,
-            message: ' Error from server...'
+            errMessage: ' Error from server...'
         });
+    }
+}
+let getDetailDoctorById = async (req, res) => {
+    try {
+        if (!req.query.id) {
+            return res.status(200).json({
+                errorCode: -1,
+                errMessage: 'Missing req.query.id'
+            })
+        }
+        let infor = await doctorService.getDetailDoctorById(req.query.id);
+        return res.status(200).json(infor);
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errorCode: -1,
+            errMessage: ' Error from server...'
+        })
+
     }
 }
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getALLDoctor: getALLDoctor,
-    postInforDoctor: postInforDoctor
+    postInforDoctor: postInforDoctor,
+    getDetailDoctorById: getDetailDoctorById
 }
