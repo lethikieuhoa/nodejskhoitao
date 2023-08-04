@@ -44,7 +44,7 @@ let getALLDoctor = () => {
                 where: { roleId: 'R2' },
                 attributes: ['id', 'firstName', 'lastName'],
             });
-            console.log('aaa')
+            // console.log('aaa')
             resolve({
                 errCode: 0,
                 data: doctors
@@ -57,20 +57,41 @@ let getALLDoctor = () => {
 let saveInforDoctor = (inputData) => {
     return new Promise(async (resolve, reject) => {
         try {
+
             //console.log('------------', inputData); return;
-            if (!inputData.doctorId || !inputData.contentMarkdown || !inputData.contentHTML) {
+            if (!inputData.doctorId || !inputData.contentMarkdown || !inputData.contentHTML || !inputData.action) {
+                //console.log(inputData, 11, '---------'); return;
                 resolve({
                     errCode: 1,
                     errMessage: 'Missing paramater'
                 })
             }
             else {
-                await db.Markdown.create({
-                    contentHTML: inputData.contentHTML,
-                    contentMarkdown: inputData.contentMarkdown,
-                    description: inputData.description,
-                    doctorId: inputData.doctorId
-                });
+                //console.log(inputData.action, '---------'); return;
+                if (inputData.action === 'CREATE') {
+                    await db.Markdown.create({
+                        contentHTML: inputData.contentHTML,
+                        contentMarkdown: inputData.contentMarkdown,
+                        description: inputData.description,
+                        doctorId: inputData.doctorId
+                    });
+                }
+                else {
+                    //console.log('---'); return;
+                    let doctorMarkDown = await db.Markdown.findOne({
+                        where: { doctorId: inputData.doctorId },
+                        raw: false,
+                    })
+                    // console.log('---', doctorMarkDown);
+                    if (doctorMarkDown) {
+                        doctorMarkDown.contentHTML = inputData.contentHTML;
+                        doctorMarkDown.contentMarkdown = inputData.contentMarkdown;
+                        doctorMarkDown.description = inputData.description;
+                        //doctorMarkDown.updateAt = new Date()
+                        await doctorMarkDown.save();
+                    }
+
+                }
                 resolve({
                     errCode: 0,
                     errMessage: 'Save infor doctor succeed!'
@@ -88,7 +109,7 @@ let getDetailDoctorById = (idInput) => {
             if (!idInput) {
                 resolve({
                     errCode: -1,
-                    errMessage: 'Missin required paramater!'
+                    errMessage: 'Missing required paramater!'
                 })
             }
             else {
