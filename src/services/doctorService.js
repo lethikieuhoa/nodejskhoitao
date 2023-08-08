@@ -1,5 +1,8 @@
 var bcrypt = require('bcryptjs');
 const db = require('../models/index');
+require('dotenv').config();
+const _ = require('lodash');
+const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 let getTopDoctorHome = (limitInput) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -145,10 +148,60 @@ let getDetailDoctorById = (idInput) => {
         }
     })
 }
+let bulkCreateSchedule = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!data.arrSchedule || !data.doctorId || !data.formatedDate) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required paramater!'
+                })
+            }
+            else {
+                let schedule = data.arrSchedule;
+                if (schedule && schedule.length > 0) {
+                    schedule.map(item => {
+                        item.maxNumber = MAX_NUMBER_SCHEDULE;
+                        return item;
+                    })
+                }
+                //console.log('data from bulk', schedule);
+                //lay danh sach ton tai trong database
+                let existing = await db.Schedule.findAll({
+                    where: { doctorId: data.doctorId, date: data.formatedDate },
+                    attributes: ['doctorId', 'timeType', 'date', 'maxNumber']
+                });
+                if (existing && existing.length > 0) {
+                    existing = existing.map(item => {
+                        item.date = new Date(item.date).getTime();
+                        return item;
+                    })
+                }
+                //lay danh sach ko ton tai trong database
+                let toCreate = _.differenceWith(schedule, existing, (a, b) => {
+                    return a.timeType === b.timeType && a.date === b.date
+                });
+                if (toCreate && toCreate.length > 0) {
+                    await db.Schedule.bulkCreate(toCreate);
+                }
+            }
+
+
+            resolve({
+                errCode: 0,
+                errMessage: 'OK'
+            });
+        } catch (e) {
+            reject(e);
+
+        }
+    })
+}
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getALLDoctor: getALLDoctor,
     saveInforDoctor: saveInforDoctor,
-    getDetailDoctorById: getDetailDoctorById
+    getDetailDoctorById: getDetailDoctorById,
+    bulkCreateSchedule: bulkCreateSchedule
 
 }
