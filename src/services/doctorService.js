@@ -60,17 +60,18 @@ let getALLDoctor = () => {
 let saveInforDoctor = (inputData) => {
     return new Promise(async (resolve, reject) => {
         try {
-
-            //console.log('------------', inputData); return;
-            if (!inputData.doctorId || !inputData.contentMarkdown || !inputData.contentHTML || !inputData.action) {
-                //console.log(inputData, 11, '---------'); return;
+            if (!inputData.doctorId || !inputData.contentMarkdown || !inputData.contentHTML || !inputData.action
+                || !inputData.selectedPrice || !inputData.selectedPayment
+                || !inputData.selectedProvice || !inputData.nameClinic
+                || !inputData.addressClinic
+            ) {
                 resolve({
                     errCode: 1,
                     errMessage: 'Missing paramater'
                 })
             }
             else {
-                //console.log(inputData.action, '---------'); return;
+                //upsert to Markdown
                 if (inputData.action === 'CREATE') {
                     await db.Markdown.create({
                         contentHTML: inputData.contentHTML,
@@ -95,6 +96,35 @@ let saveInforDoctor = (inputData) => {
                     }
 
                 }
+                //upsert to doctor_infor table   
+                let doctorInfor = await db.Doctor_Infor.findOne({
+                    where: { doctorId: inputData.doctorId },
+                    raw: false
+                });
+                if (doctorInfor) {
+                    //update  
+                    doctorInfor.doctorId = inputData.doctorId;
+                    doctorInfor.priceId = inputData.selectedPrice;
+                    doctorInfor.provinceId = inputData.selectedPayment;
+                    doctorInfor.provinceId = inputData.selectedProvice;
+                    doctorInfor.nameClinic = inputData.nameClinic;
+                    doctorInfor.addressClinic = inputData.addressClinic;
+                    doctorInfor.note = inputData.note;
+                    await doctorInfor.save();
+                }
+                else {
+                    //create
+                    await db.Doctor_Infor.create({
+                        doctorId: inputData.doctorId,
+                        priceId: inputData.selectedPrice,
+                        provinceId: inputData.selectedPayment,
+                        provinceId: inputData.selectedProvice,
+                        nameClinic: inputData.nameClinic,
+                        addressClinic: inputData.addressClinic,
+                        note: inputData.note
+                    });
+                }
+
                 resolve({
                     errCode: 0,
                     errMessage: 'Save infor doctor succeed!'
