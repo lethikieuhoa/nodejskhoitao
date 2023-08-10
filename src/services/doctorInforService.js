@@ -13,6 +13,9 @@ let getDoctorInforByIdDoctor = (idDoctor) => {
             else {
                 let data = await db.Doctor_Infor.findOne({
                     where: { doctorId: idDoctor },
+                    attributes: {
+                        exclude: ['id', 'doctorId']
+                    },
                     include: [
                         {
                             model: db.Allcode,
