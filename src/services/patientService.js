@@ -15,7 +15,11 @@ let postBookAppointment = async (data) => {
                     where: { email: data.email },
                     defaults: {
                         email: data.email,
-                        roleId: 'R3'
+                        roleId: 'R3',
+                        address: data.address,
+                        phonenumber: data.phoneNumber,
+                        firstName: data.fullName,
+                        gender: data.gender
                     }
                 });
                 //create booking record
@@ -27,7 +31,7 @@ let postBookAppointment = async (data) => {
                             doctorId: data.doctorId,
                             patientid: user.id,
                             date: data.date,
-                            timeType: data.timeType,
+                            timeType: data.timeType
                         }
                     });
                 }
