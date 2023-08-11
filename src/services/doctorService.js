@@ -163,6 +163,7 @@ let getDetailDoctorById = (idInput) => {
                     raw: true,
                     nest: true
                 });
+                // console.log(data);
                 if (data && data.image) {
                     data.image = new Buffer.from(data.image, 'base64').toString('binary');
                 }
@@ -261,12 +262,81 @@ let getScheduleByDate = (doctorId, date) => {
         }
     })
 }
+let getProfileDoctorById = (doctorId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required parameter!'
+                })
+            }
+            else {
+                let data = await db.User.findOne({
+                    where: { id: doctorId },
+                    attributes: {
+                        exclude: ['password', 'id']
+                    },
+                    include: [
+                        {
+                            model: db.Markdown,
+                            attributes: ['contentHTML', 'contentMarkdown', 'description']
+                        },
+                        {
+                            model: db.Allcode,
+                            as: 'positionData',
+                            attributes: ['valueEn', 'valueVi']
+                        },
+                        {
+                            model: db.Doctor_Infor,
+                            attributes: {
+                                exclude: ['id', 'doctorId']
+                            },
+                            include: [
+                                {
+                                    model: db.Allcode,
+                                    as: 'priceData',
+                                    attributes: ['valueEn', 'valueVi']
+                                },
+                                {
+                                    model: db.Allcode,
+                                    as: 'paymentData',
+                                    attributes: ['valueEn', 'valueVi']
+                                },
+                                {
+                                    model: db.Allcode,
+                                    as: 'provinceData',
+                                    attributes: ['valueEn', 'valueVi']
+                                }
+                            ]
+                        }
+                    ],
+                    raw: true,
+                    nest: true
+                });
+                //console.log(data)
+                if (data && data.image) {
+                    //console.log(1111)
+                    data.image = new Buffer.from(data.image, 'base64').toString('binary');
+                }
+                if (!data) { data = {} }
+                resolve({
+                    errCode: 0,
+                    data: data
+                });
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getALLDoctor: getALLDoctor,
     saveInforDoctor: saveInforDoctor,
     getDetailDoctorById: getDetailDoctorById,
     bulkCreateSchedule: bulkCreateSchedule,
-    getScheduleByDate: getScheduleByDate
+    getScheduleByDate: getScheduleByDate,
+    getProfileDoctorById: getProfileDoctorById
 
 }

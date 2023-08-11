@@ -35,6 +35,7 @@ let initWebRoutes = (app) => {
 
     router.get('/api/get-markdown-by-id-doctor', markdownController.getMarkdownByIdDoctor);
     router.get('/api/get-doctor-infor-by-id-doctor', doctorInforController.getdoctorInforByIdDoctor);
+    router.get('/api/get-profile-doctor-by-id', doctorController.getProfileDoctorById);
 
     return app.use("/", router);
 
