@@ -1,16 +1,27 @@
 var bcrypt = require('bcryptjs');
 const db = require('../models/index');
+const emailService = require('./emailService.js');
 require('dotenv').config();
 let postBookAppointment = async (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!data.email || !data.doctorId || !data.date || !data.timeType) {
+            if (!data.email || !data.doctorId || !data.date
+                || !data.timeType || !data.fullName
+                || !data.timeString || !data.language || !data.doctorName) {
                 resolve({
                     errCode: 1,
                     errMessage: 'Missing paramater'
                 })
             }
             else {//upsert patient
+                await emailService.sendSimpleEmail({
+                    receiverEmail: data.email,
+                    patientName: data.fullName,
+                    time: data.timeString,
+                    doctorName: data.doctorName,
+                    redirectLink: "http://localhost:3000/home",
+                    language: data.language
+                });
                 let [user, status_create] = await db.User.findOrCreate({
                     where: { email: data.email },
                     defaults: {
