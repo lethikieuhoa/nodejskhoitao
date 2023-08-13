@@ -1,5 +1,24 @@
 var bcrypt = require('bcryptjs');
 const db = require('../models/index');
+let getAllSpecialties = () => {
+    //console.log(1111); return;
+    return new Promise(async (resolve, reject) => {
+        try {
+            let specialties = await db.Specialty.findAll();
+            if (specialties && specialties.length > 0) {
+                specialties.map(item => {
+                    item.image = new Buffer.from(item.image, 'base64').toString('binary');
+                });
+            }
+            resolve({
+                errCode: 0,
+                data: specialties
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 let createNewSpecialty = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -29,5 +48,6 @@ let createNewSpecialty = (data) => {
 
 }
 module.exports = {
-    createNewSpecialty: createNewSpecialty
+    createNewSpecialty: createNewSpecialty,
+    getAllSpecialties: getAllSpecialties
 }
