@@ -47,7 +47,52 @@ let createNewSpecialty = (data) => {
     })
 
 }
+let getDetailSpecialtyById = (idInput, location) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!idInput || !location) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing paramater'
+                })
+            }
+            else {
+                let data = await db.Specialty.findOne({
+                    where: { id: idInput },
+                    attributes: ['descriptionHTML', 'name']
+                });
+                if (data) {
+                    let docSpecialties = {};
+                    if (location === 'ALL') {
+                        docSpecialties = await db.Doctor_Infor.findAll({
+                            where: { specialtyId: idInput },
+                            attributes: ['doctorId', 'provinceId']
+                        });
+                    }
+                    else {
+                        docSpecialties = await db.Doctor_Infor.findAll({
+                            where: { specialtyId: idInput, provinceId: location },
+                            attributes: ['doctorId', 'provinceId']
+                        });
+                    }
+                    data.docSpecialties = docSpecialties;
+                } else {
+                    data = {};
+                }
+                resolve({
+                    errCode: 0,
+                    data: data
+                });
+
+
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
 module.exports = {
     createNewSpecialty: createNewSpecialty,
-    getAllSpecialties: getAllSpecialties
+    getAllSpecialties: getAllSpecialties,
+    getDetailSpecialtyById: getDetailSpecialtyById
 }
