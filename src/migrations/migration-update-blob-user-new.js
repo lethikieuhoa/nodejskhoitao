@@ -4,7 +4,9 @@ module.exports = {
             queryInterface.changeColumn('Users', 'image', {
                 type: Sequelize.BLOB('long'),
                 allowNull: true,
-            })
+            }),
+            queryInterface.removeColumn('Users', 'birth', { /* query options */ })
+
         ])
     },
 
@@ -14,6 +16,7 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: true,
             })
+
         ])
     }
 };

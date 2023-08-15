@@ -12,7 +12,10 @@ let postBookAppointment = async (data) => {
         try {
             if (!data.email || !data.doctorId || !data.date
                 || !data.timeType || !data.fullName
-                || !data.timeString || !data.language || !data.doctorName) {
+                || !data.timeString || !data.language
+                || !data.doctorName
+                || !data.gender
+                || !data.address || !data.birthday) {
                 resolve({
                     errCode: 1,
                     errMessage: 'Missing paramater'
@@ -38,7 +41,8 @@ let postBookAppointment = async (data) => {
                         address: data.address,
                         phonenumber: data.phoneNumber,
                         firstName: data.fullName,
-                        gender: data.gender
+                        gender: data.gender,
+                        birthday: data.birthday
                     }
                 });
                 //create booking record
@@ -51,7 +55,8 @@ let postBookAppointment = async (data) => {
                             patientid: user.id,
                             date: data.date,
                             timeType: data.timeType,
-                            token: token
+                            token: token,
+                            reason: data.reason
                         }
                     });
                 }
@@ -60,9 +65,6 @@ let postBookAppointment = async (data) => {
                     errMessage: 'Save infor user accout succeed!'
                 });
             }
-
-            let infor = await patientService.postBookAppointment(req.body);
-            return res.status(200).json(infor);
         } catch (e) {
             reject(e);
         }

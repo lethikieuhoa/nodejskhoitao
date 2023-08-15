@@ -20,10 +20,16 @@ module.exports = {
             date: {
                 type: Sequelize.STRING
             },
+            birthday: {
+                type: Sequelize.STRING
+            },
             timeType: {
                 type: Sequelize.STRING
             },
             token: {
+                type: Sequelize.STRING
+            },
+            reason: {
                 type: Sequelize.STRING
             },
             createdAt: {
